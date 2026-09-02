@@ -14,6 +14,7 @@ class Game {
   constructor(canvas, mapLines) {
     this.canvas = canvas;
     this.ctx = canvas.getContext('2d');
+    this.mapLines = mapLines;
 
     const { grid, width, height, player, boxes } = parseMap(mapLines);
     this.grid = grid;
@@ -27,6 +28,16 @@ class Game {
 
     this.history = [];
 
+    this.render();
+  }
+
+  // 레벨을 초기 상태로 되돌림 (플레이어/박스 위치, undo 히스토리 모두 리셋)
+  reset() {
+    const { grid, player, boxes } = parseMap(this.mapLines);
+    this.grid = grid;
+    this.player = player;
+    this.boxes = boxes;
+    this.history = [];
     this.render();
   }
 

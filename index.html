@@ -4,23 +4,48 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sokoban</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Sokoban</h1>
+  <div class="console">
+    <h1 class="console-title">Sokoban</h1>
 
-  <div id="canvas-wrap">
-    <canvas id="game-canvas"></canvas>
-  </div>
-
-  <div id="controls">
-    <div id="dpad">
-      <button class="btn" data-dir="up">▲</button>
-      <button class="btn" data-dir="left">◀</button>
-      <button class="btn" data-dir="down">▼</button>
-      <button class="btn" data-dir="right">▶</button>
+    <div class="screen-bezel">
+      <div id="canvas-wrap">
+        <canvas id="game-canvas"></canvas>
+      </div>
     </div>
-    <button id="undo-btn">Undo</button>
+
+    <div class="status-row">
+      <span class="power-led"></span>
+      <span class="power-label">POWER</span>
+    </div>
+
+    <div class="controls-row">
+      <div class="dpad" id="dpad">
+        <button class="dpad-btn dpad-up" data-dir="up"><span class="tri tri-up"></span></button>
+        <button class="dpad-btn dpad-left" data-dir="left"><span class="tri tri-left"></span></button>
+        <div class="dpad-center"></div>
+        <button class="dpad-btn dpad-right" data-dir="right"><span class="tri tri-right"></span></button>
+        <button class="dpad-btn dpad-down" data-dir="down"><span class="tri tri-down"></span></button>
+      </div>
+
+      <button id="undo-btn" class="action-btn">Undo</button>
+
+      <div class="action-cluster">
+        <button id="reset-btn" class="action-btn reset-btn">Reset</button>
+        <div class="start-select">START / SELECT</div>
+      </div>
+
+      <div class="speaker-grille">
+        <span></span><span></span><span></span>
+        <span></span><span></span><span></span>
+        <span></span><span></span><span></span>
+      </div>
+    </div>
   </div>
 
   <script src="js/map.js"></script>

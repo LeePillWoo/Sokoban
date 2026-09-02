@@ -33,7 +33,7 @@ const DIR_BY_NAME = {
   right: [1, 0],
 };
 
-document.querySelectorAll('#dpad .btn').forEach((btn) => {
+document.querySelectorAll('#dpad [data-dir]').forEach((btn) => {
   btn.addEventListener('click', () => {
     const dir = DIR_BY_NAME[btn.dataset.dir];
     game.move(dir[0], dir[1]);
@@ -42,4 +42,8 @@ document.querySelectorAll('#dpad .btn').forEach((btn) => {
 
 document.getElementById('undo-btn').addEventListener('click', () => {
   game.undo();
+});
+
+document.getElementById('reset-btn').addEventListener('click', () => {
+  game.reset();
 });
