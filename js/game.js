@@ -25,6 +25,8 @@ class Game {
     canvas.width = width * TILE_SIZE;
     canvas.height = height * TILE_SIZE;
 
+    this.history = [];
+
     this.render();
   }
 
@@ -49,12 +51,32 @@ class Game {
       const bx = nx + dx;
       const by = ny + dy;
       if (this.isWall(bx, by) || this.getBoxAt(bx, by)) return false;
-      box.x = bx;
-      box.y = by;
+    }
+
+    this.history.push({
+      player: { ...this.player },
+      boxes: this.boxes.map(b => ({ ...b })),
+    });
+
+    if (box) {
+      box.x = nx + dx;
+      box.y = ny + dy;
     }
 
     this.player.x = nx;
     this.player.y = ny;
+
+    this.render();
+    return true;
+  }
+
+  // 직전 이동을 되돌림. 되돌릴 이동이 없으면 false 반환.
+  undo() {
+    const prev = this.history.pop();
+    if (!prev) return false;
+
+    this.player = prev.player;
+    this.boxes = prev.boxes;
 
     this.render();
     return true;

@@ -8,7 +8,20 @@
 </head>
 <body>
   <h1>Sokoban</h1>
-  <canvas id="game-canvas"></canvas>
+
+  <div id="canvas-wrap">
+    <canvas id="game-canvas"></canvas>
+  </div>
+
+  <div id="controls">
+    <div id="dpad">
+      <button class="btn" data-dir="up">▲</button>
+      <button class="btn" data-dir="left">◀</button>
+      <button class="btn" data-dir="down">▼</button>
+      <button class="btn" data-dir="right">▶</button>
+    </div>
+    <button id="undo-btn">Undo</button>
+  </div>
 
   <script src="js/map.js"></script>
   <script src="js/game.js"></script>

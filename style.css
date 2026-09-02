@@ -14,8 +14,61 @@ h1 {
   margin: 12px 0;
 }
 
+#canvas-wrap {
+  max-width: 100vw;
+  padding: 0 8px;
+  box-sizing: border-box;
+}
+
 #game-canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
   background: #000;
   border: 2px solid #555;
   image-rendering: pixelated;
+}
+
+#controls {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-top: 16px;
+}
+
+#dpad {
+  display: grid;
+  grid-template-columns: repeat(3, 56px);
+  grid-template-rows: repeat(2, 56px);
+  grid-template-areas:
+    ".    up    ."
+    "left down right";
+  gap: 6px;
+}
+
+#dpad .btn[data-dir="up"] { grid-area: up; }
+#dpad .btn[data-dir="left"] { grid-area: left; }
+#dpad .btn[data-dir="down"] { grid-area: down; }
+#dpad .btn[data-dir="right"] { grid-area: right; }
+
+.btn,
+#undo-btn {
+  font-size: 20px;
+  border: none;
+  border-radius: 8px;
+  background: #3a3a3a;
+  color: #eee;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn:active,
+#undo-btn:active {
+  background: #555;
+}
+
+#undo-btn {
+  padding: 12px 20px;
+  font-size: 16px;
 }
