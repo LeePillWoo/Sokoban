@@ -1,4 +1,6 @@
-const TILE_SIZE = 40;
+// 정사각형 LCD 논리 해상도(px). 스테이지 크기와 무관하게 화면은 항상 이 크기의 정사각형이고,
+// 레벨은 그 안에 꽉 차도록 비율을 맞춰 그려지며 남는 여백은 바닥색(아이보리)으로 채운다.
+const SCREEN_SIZE = 480;
 
 const COLORS = {
   wall: '#4a4a4a',
@@ -23,8 +25,12 @@ class Game {
     this.player = player;
     this.boxes = boxes;
 
-    canvas.width = width * TILE_SIZE;
-    canvas.height = height * TILE_SIZE;
+    this.tileSize = SCREEN_SIZE / Math.max(width, height);
+    this.offsetX = (SCREEN_SIZE - width * this.tileSize) / 2;
+    this.offsetY = (SCREEN_SIZE - height * this.tileSize) / 2;
+
+    canvas.width = SCREEN_SIZE;
+    canvas.height = SCREEN_SIZE;
 
     this.history = [];
     this.redoStack = [];
@@ -133,45 +139,52 @@ class Game {
 
   render() {
     const { ctx } = this;
+    const t = this.tileSize;
+    const ox = this.offsetX;
+    const oy = this.offsetY;
+
+    // 레벨 크기와 무관하게 화면 전체를 바닥색으로 채운 뒤 그 위에 레벨을 그린다 (여백 = 바닥색)
+    ctx.fillStyle = COLORS.floor;
+    ctx.fillRect(0, 0, SCREEN_SIZE, SCREEN_SIZE);
 
     for (let y = 0; y < this.height; y++) {
       for (let x = 0; x < this.width; x++) {
         const cell = this.grid[y][x];
-        const px = x * TILE_SIZE;
-        const py = y * TILE_SIZE;
+        const px = ox + x * t;
+        const py = oy + y * t;
 
         ctx.fillStyle = cell.wall ? COLORS.wall : COLORS.floor;
-        ctx.fillRect(px, py, TILE_SIZE, TILE_SIZE);
+        ctx.fillRect(px, py, t, t);
         ctx.strokeStyle = COLORS.outline;
-        ctx.strokeRect(px, py, TILE_SIZE, TILE_SIZE);
+        ctx.strokeRect(px, py, t, t);
 
         if (!cell.wall && cell.goal) {
           ctx.fillStyle = COLORS.goal;
           ctx.beginPath();
-          ctx.arc(px + TILE_SIZE / 2, py + TILE_SIZE / 2, TILE_SIZE * 0.12, 0, Math.PI * 2);
+          ctx.arc(px + t / 2, py + t / 2, t * 0.12, 0, Math.PI * 2);
           ctx.fill();
         }
       }
     }
 
     for (const box of this.boxes) {
-      const px = box.x * TILE_SIZE;
-      const py = box.y * TILE_SIZE;
+      const px = ox + box.x * t;
+      const py = oy + box.y * t;
       const onGoal = this.grid[box.y][box.x].goal;
 
       ctx.fillStyle = onGoal ? COLORS.boxOnGoal : COLORS.box;
-      const pad = 4;
-      ctx.fillRect(px + pad, py + pad, TILE_SIZE - pad * 2, TILE_SIZE - pad * 2);
+      const pad = t * 0.1;
+      ctx.fillRect(px + pad, py + pad, t - pad * 2, t - pad * 2);
       ctx.strokeStyle = '#00000055';
-      ctx.strokeRect(px + pad, py + pad, TILE_SIZE - pad * 2, TILE_SIZE - pad * 2);
+      ctx.strokeRect(px + pad, py + pad, t - pad * 2, t - pad * 2);
     }
 
     const pp = this.player;
-    const ppx = pp.x * TILE_SIZE;
-    const ppy = pp.y * TILE_SIZE;
+    const ppx = ox + pp.x * t;
+    const ppy = oy + pp.y * t;
     ctx.fillStyle = COLORS.player;
     ctx.beginPath();
-    ctx.arc(ppx + TILE_SIZE / 2, ppy + TILE_SIZE / 2, TILE_SIZE * 0.32, 0, Math.PI * 2);
+    ctx.arc(ppx + t / 2, ppy + t / 2, t * 0.32, 0, Math.PI * 2);
     ctx.fill();
   }
 }

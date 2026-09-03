@@ -30,10 +30,24 @@ html, body {
   box-shadow:
     0 20px 40px rgba(0, 0, 0, 0.55),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  display: flex;
-  flex-direction: column;
   overflow: hidden;
+
+  display: grid;
+  grid-template-areas:
+    "title"
+    "hud"
+    "screen"
+    "status"
+    "controls";
+  grid-template-rows: auto auto 1fr auto auto;
+  row-gap: 0;
 }
+
+.console-title { grid-area: title; }
+.hud-row       { grid-area: hud; }
+.screen-bezel  { grid-area: screen; }
+.status-row    { grid-area: status; }
+.controls-row  { grid-area: controls; }
 
 .console-title {
   margin: 0 0 clamp(8px, 2vh, 14px);
@@ -43,71 +57,9 @@ html, body {
   letter-spacing: 1px;
   color: #f0f0f0;
   text-shadow: 0 2px 2px rgba(0, 0, 0, 0.6);
-  flex-shrink: 0;
 }
 
-/* ---- 스테이지 선택 화면 ---- */
-
-.view-select {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-}
-
-.select-heading {
-  text-align: center;
-  font-family: 'Baloo 2', sans-serif;
-  font-size: clamp(13px, 3.5vw, 16px);
-  letter-spacing: 1px;
-  color: #aaa;
-  margin-bottom: clamp(10px, 2.5vh, 16px);
-}
-
-.stage-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: clamp(10px, 3vw, 16px);
-}
-
-.stage-card {
-  border: none;
-  border-radius: 14px;
-  background: #e8e6e0;
-  padding: clamp(16px, 5vw, 22px) clamp(8px, 2vw, 12px);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  cursor: pointer;
-  box-shadow: 0 3px 4px rgba(0, 0, 0, 0.3);
-  touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.stage-card:active {
-  background: #c9c7c0;
-}
-
-.stage-card-title {
-  font-family: 'Baloo 2', sans-serif;
-  font-size: clamp(15px, 4.5vw, 20px);
-  font-weight: 700;
-  color: #222;
-}
-
-.stage-card-sub {
-  font-size: clamp(10px, 3vw, 12px);
-  color: #555;
-  text-align: center;
-}
-
-/* ---- 게임 화면 ---- */
-
-.view-game {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-}
+/* ---- HUD ---- */
 
 .hud-row {
   display: flex;
@@ -118,7 +70,6 @@ html, body {
   font-family: 'Baloo 2', sans-serif;
   font-size: clamp(11px, 3vw, 13px);
   color: #ddd;
-  flex-shrink: 0;
 }
 
 .hud-btn {
@@ -142,31 +93,33 @@ html, body {
   white-space: nowrap;
 }
 
+/* ---- 액정(LCD) ---- */
+
 .screen-bezel {
   position: relative;
   background: #0a0a0a;
-  border-radius: 14px;
-  padding: clamp(8px, 2vw, 12px);
+  border-radius: 10px;
+  padding: clamp(3px, 1vw, 6px);
   box-shadow:
-    inset 0 4px 10px rgba(0, 0, 0, 0.75),
-    inset 0 -2px 4px rgba(255, 255, 255, 0.03);
+    inset 0 3px 8px rgba(0, 0, 0, 0.75),
+    inset 0 -1px 3px rgba(255, 255, 255, 0.03);
   min-height: 0;
-  flex-shrink: 0;
 }
 
 .screen-bezel::after {
   content: '';
   position: absolute;
-  inset: clamp(8px, 2vw, 12px);
-  border-radius: 6px;
+  inset: clamp(3px, 1vw, 6px);
+  border-radius: 5px;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, transparent 40%);
   pointer-events: none;
 }
 
 #canvas-wrap {
+  position: relative;
   max-width: 100%;
   margin: 0 auto;
-  border-radius: 6px;
+  border-radius: 5px;
   overflow: hidden;
   line-height: 0;
 }
@@ -174,14 +127,79 @@ html, body {
 #game-canvas {
   display: block;
   max-width: 100%;
-  /* 세로 공간은 화면 비율(vh)로 넉넉히 잡되, 그 위/아래에 있는 HUD·D-pad·버튼 등
-     고정 UI가 항상 들어갈 자리(대략 300px)는 침범하지 않도록 둘 중 작은 값 사용 */
-  max-height: min(56vh, calc(100vh - 300px));
+  /* 정사각형 액정: 세로 공간은 화면 비율(vh)로 잡되, 위/아래 고정 UI(대략 260px)는 항상 확보 */
+  max-height: min(58vh, calc(100vh - 260px));
   width: auto;
   height: auto;
-  background: #000;
+  background: #e0dcd0;
   image-rendering: pixelated;
   touch-action: none;
+}
+
+/* 스테이지 선택 메뉴 — 액정 위에 표시 */
+
+.menu-screen {
+  position: absolute;
+  inset: 0;
+  background: #e0dcd0;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(10px, 3vw, 16px);
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.menu-heading {
+  text-align: center;
+  font-family: 'Baloo 2', sans-serif;
+  font-size: clamp(12px, 3.5vw, 15px);
+  letter-spacing: 1px;
+  color: #6b6558;
+  margin-bottom: clamp(8px, 2.5vh, 14px);
+  flex-shrink: 0;
+}
+
+.stage-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(8px, 2.5vw, 14px);
+  align-content: start;
+}
+
+.stage-card {
+  border: none;
+  border-radius: 12px;
+  background: #a0522d;
+  color: #fff;
+  padding: clamp(14px, 4.5vw, 20px) clamp(8px, 2vw, 12px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  box-shadow: 0 3px 4px rgba(0, 0, 0, 0.3);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.stage-card:active {
+  filter: brightness(0.85);
+}
+
+.stage-card.cleared {
+  background: #2e8b57;
+}
+
+.stage-card-title {
+  font-family: 'Baloo 2', sans-serif;
+  font-size: clamp(15px, 4.5vw, 20px);
+  font-weight: 700;
+}
+
+.stage-card-sub {
+  font-size: clamp(10px, 3vw, 12px);
+  color: #f1ece2;
+  text-align: center;
 }
 
 /* 클리어 결과 오버레이 */
@@ -193,7 +211,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 6px;
+  border-radius: 5px;
   z-index: 5;
   padding: 10px;
   box-sizing: border-box;
@@ -271,13 +289,14 @@ html, body {
   color: #eee;
 }
 
+/* ---- 상태 표시줄 ---- */
+
 .status-row {
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 6px;
   margin: clamp(6px, 1.5vh, 10px) 4px 4px;
-  flex-shrink: 0;
 }
 
 .power-led {
@@ -294,6 +313,8 @@ html, body {
   color: #999;
 }
 
+/* ---- 조작부 ---- */
+
 .controls-row {
   display: flex;
   align-items: flex-start;
@@ -301,7 +322,6 @@ html, body {
   gap: clamp(10px, 3vw, 18px);
   margin-top: clamp(10px, 2vh, 18px);
   flex-wrap: wrap;
-  flex-shrink: 0;
 }
 
 /* D-pad — 터치하기 편하도록 큼직하게 */
@@ -428,14 +448,23 @@ html, body {
   .speaker-grille { display: none; }
 }
 
-/* 가로 모드 + 짧은 세로 높이 (모바일 가로 방향): 세로 공간을 최대한 아낀다 */
+/* 가로 모드 + 짧은 세로 높이 (모바일 가로 방향): 화면과 조작부를 좌우로 배치 */
 @media (orientation: landscape) and (max-height: 500px) {
-  .console { width: auto; max-width: 96vw; flex-direction: row; align-items: center; gap: 16px; }
+  .console {
+    width: auto;
+    max-width: 96vw;
+    grid-template-areas:
+      "title  screen controls"
+      "hud    screen controls"
+      "status screen controls";
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: auto auto 1fr;
+    align-items: center;
+    column-gap: 16px;
+  }
   .console-title { writing-mode: vertical-rl; margin: 0; font-size: clamp(14px, 4vh, 18px); }
-  .view-game { flex-direction: row; align-items: center; gap: 14px; }
-  .hud-row { display: none; }
-  #game-canvas { max-height: min(78vh, calc(100vh - 60px)); }
-  .status-row { display: none; }
+  .hud-row, .status-row { display: none; }
+  #game-canvas { max-height: min(80vh, calc(100vh - 40px)); }
   .controls-row {
     flex-direction: column;
     margin-top: 0;

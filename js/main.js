@@ -24,8 +24,7 @@ function formatTime(ms) {
 }
 
 const canvas = document.getElementById('game-canvas');
-const viewSelect = document.getElementById('view-select');
-const viewGame = document.getElementById('view-game');
+const menuScreen = document.getElementById('menu-screen');
 const stageGrid = document.getElementById('stage-grid');
 const backBtn = document.getElementById('back-btn');
 const hudStageName = document.getElementById('hud-stage-name');
@@ -45,9 +44,9 @@ let startTime = 0;
 let timerInterval = null;
 let progress = loadProgress();
 
-function showView(name) {
-  viewSelect.hidden = name !== 'select';
-  viewGame.hidden = name !== 'game';
+// 메뉴 화면이 액정을 덮고 있지 않고, 실제 스테이지가 로드된 상태에서만 조작을 받는다
+function isPlaying() {
+  return menuScreen.hidden && !!game;
 }
 
 function renderStageGrid() {
@@ -55,14 +54,14 @@ function renderStageGrid() {
 
   STAGES.forEach((stage, index) => {
     const btn = document.createElement('button');
-    btn.className = 'stage-card';
+    const best = progress[stage.id];
+    btn.className = best ? 'stage-card cleared' : 'stage-card';
 
     const title = document.createElement('div');
     title.className = 'stage-card-title';
     title.textContent = stage.name;
     btn.appendChild(title);
 
-    const best = progress[stage.id];
     const sub = document.createElement('div');
     sub.className = 'stage-card-sub';
     sub.textContent = best ? `Best ${best.bestMoves} / ${formatTime(best.bestTimeMs)}` : '미완료';
@@ -99,16 +98,28 @@ function hideResult() {
   resultBest.hidden = true;
 }
 
+function showMenu() {
+  progress = loadProgress();
+  renderStageGrid();
+  menuScreen.hidden = false;
+  backBtn.hidden = true;
+  hudStageName.textContent = '스테이지 선택';
+  hudMoves.textContent = '';
+  hudTime.textContent = '';
+}
+
 function startStage(index) {
   currentStageIndex = index;
   game = new Game(canvas, STAGES[index].lines);
   hideResult();
-  showView('game');
+  menuScreen.hidden = true;
+  backBtn.hidden = false;
   updateHud();
   startTimer();
 }
 
 function retryStage() {
+  if (!game) return;
   game.reset();
   hideResult();
   updateHud();
@@ -118,9 +129,7 @@ function retryStage() {
 function backToSelect() {
   stopTimer();
   hideResult();
-  progress = loadProgress();
-  renderStageGrid();
-  showView('select');
+  showMenu();
 }
 
 function handleWin() {
@@ -148,10 +157,9 @@ function afterAction() {
   if (game.won) handleWin();
 }
 
-// ---- 스테이지 선택 / 상단 이동 ----
+// ---- 초기 화면 / 상단 이동 ----
 
-renderStageGrid();
-showView('select');
+showMenu();
 
 backBtn.addEventListener('click', backToSelect);
 resultSelectBtn.addEventListener('click', backToSelect);
@@ -181,7 +189,7 @@ const DIR_BY_NAME = {
 };
 
 window.addEventListener('keydown', (e) => {
-  if (viewGame.hidden || !game) return;
+  if (!isPlaying()) return;
 
   if (e.key === 'z' || e.key === 'Z' || e.key === 'Backspace') {
     e.preventDefault();
@@ -207,6 +215,7 @@ window.addEventListener('keydown', (e) => {
 
 document.querySelectorAll('#dpad [data-dir]').forEach((btn) => {
   btn.addEventListener('click', () => {
+    if (!isPlaying()) return;
     const dir = DIR_BY_NAME[btn.dataset.dir];
     game.move(dir[0], dir[1]);
     afterAction();
@@ -214,16 +223,21 @@ document.querySelectorAll('#dpad [data-dir]').forEach((btn) => {
 });
 
 document.getElementById('undo-btn').addEventListener('click', () => {
+  if (!isPlaying()) return;
   game.undo();
   afterAction();
 });
 
 document.getElementById('redo-btn').addEventListener('click', () => {
+  if (!isPlaying()) return;
   game.redo();
   afterAction();
 });
 
-document.getElementById('reset-btn').addEventListener('click', retryStage);
+document.getElementById('reset-btn').addEventListener('click', () => {
+  if (!isPlaying()) return;
+  retryStage();
+});
 
 const fullscreenBtn = document.getElementById('fullscreen-btn');
 if (!document.fullscreenEnabled) {
