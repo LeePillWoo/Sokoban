@@ -28,6 +28,7 @@ class Game {
 
     this.history = [];
     this.redoStack = [];
+    this.won = false;
 
     this.render();
   }
@@ -40,7 +41,18 @@ class Game {
     this.boxes = boxes;
     this.history = [];
     this.redoStack = [];
+    this.won = false;
     this.render();
+  }
+
+  // 모든 목표 지점 위에 박스가 놓였는지 확인
+  isWon() {
+    for (let y = 0; y < this.height; y++) {
+      for (let x = 0; x < this.width; x++) {
+        if (this.grid[y][x].goal && !this.getBoxAt(x, y)) return false;
+      }
+    }
+    return true;
   }
 
   snapshot() {
@@ -61,6 +73,8 @@ class Game {
 
   // dx, dy는 -1, 0, 1 중 하나. 이동 성공 시 true 반환.
   move(dx, dy) {
+    if (this.won) return false;
+
     const nx = this.player.x + dx;
     const ny = this.player.y + dy;
 
@@ -83,6 +97,7 @@ class Game {
 
     this.player.x = nx;
     this.player.y = ny;
+    this.won = this.isWon();
 
     this.render();
     return true;
@@ -96,6 +111,7 @@ class Game {
     this.redoStack.push(this.snapshot());
     this.player = prev.player;
     this.boxes = prev.boxes;
+    this.won = this.isWon();
 
     this.render();
     return true;
@@ -109,6 +125,7 @@ class Game {
     this.history.push(this.snapshot());
     this.player = next.player;
     this.boxes = next.boxes;
+    this.won = this.isWon();
 
     this.render();
     return true;

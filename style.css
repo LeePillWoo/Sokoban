@@ -1,3 +1,7 @@
+[hidden] {
+  display: none !important;
+}
+
 html, body {
   height: 100%;
   margin: 0;
@@ -15,7 +19,7 @@ html, body {
 
 .console {
   box-sizing: border-box;
-  max-width: 100vw;
+  width: min(94vw, 460px);
   max-height: 100vh;
   padding-top: calc(clamp(12px, 3vh, 20px) + env(safe-area-inset-top));
   padding-right: calc(clamp(14px, 4vw, 24px) + env(safe-area-inset-right));
@@ -42,6 +46,102 @@ html, body {
   flex-shrink: 0;
 }
 
+/* ---- 스테이지 선택 화면 ---- */
+
+.view-select {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.select-heading {
+  text-align: center;
+  font-family: 'Baloo 2', sans-serif;
+  font-size: clamp(13px, 3.5vw, 16px);
+  letter-spacing: 1px;
+  color: #aaa;
+  margin-bottom: clamp(10px, 2.5vh, 16px);
+}
+
+.stage-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(10px, 3vw, 16px);
+}
+
+.stage-card {
+  border: none;
+  border-radius: 14px;
+  background: #e8e6e0;
+  padding: clamp(16px, 5vw, 22px) clamp(8px, 2vw, 12px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  box-shadow: 0 3px 4px rgba(0, 0, 0, 0.3);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.stage-card:active {
+  background: #c9c7c0;
+}
+
+.stage-card-title {
+  font-family: 'Baloo 2', sans-serif;
+  font-size: clamp(15px, 4.5vw, 20px);
+  font-weight: 700;
+  color: #222;
+}
+
+.stage-card-sub {
+  font-size: clamp(10px, 3vw, 12px);
+  color: #555;
+  text-align: center;
+}
+
+/* ---- 게임 화면 ---- */
+
+.view-game {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.hud-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: clamp(6px, 1.5vh, 10px);
+  font-family: 'Baloo 2', sans-serif;
+  font-size: clamp(11px, 3vw, 13px);
+  color: #ddd;
+  flex-shrink: 0;
+}
+
+.hud-btn {
+  border: none;
+  border-radius: 8px;
+  background: #333;
+  color: #eee;
+  padding: 5px 9px;
+  font-family: inherit;
+  font-size: clamp(10px, 2.8vw, 12px);
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hud-btn:active {
+  background: #444;
+}
+
+.hud-stat {
+  white-space: nowrap;
+}
+
 .screen-bezel {
   position: relative;
   background: #0a0a0a;
@@ -51,6 +151,7 @@ html, body {
     inset 0 4px 10px rgba(0, 0, 0, 0.75),
     inset 0 -2px 4px rgba(255, 255, 255, 0.03);
   min-height: 0;
+  flex-shrink: 0;
 }
 
 .screen-bezel::after {
@@ -64,6 +165,7 @@ html, body {
 
 #canvas-wrap {
   max-width: 100%;
+  margin: 0 auto;
   border-radius: 6px;
   overflow: hidden;
   line-height: 0;
@@ -72,12 +174,101 @@ html, body {
 #game-canvas {
   display: block;
   max-width: 100%;
-  max-height: 46vh;
+  /* 세로 공간은 화면 비율(vh)로 넉넉히 잡되, 그 위/아래에 있는 HUD·D-pad·버튼 등
+     고정 UI가 항상 들어갈 자리(대략 300px)는 침범하지 않도록 둘 중 작은 값 사용 */
+  max-height: min(56vh, calc(100vh - 300px));
   width: auto;
   height: auto;
   background: #000;
   image-rendering: pixelated;
   touch-action: none;
+}
+
+/* 클리어 결과 오버레이 */
+
+.result-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.74);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  z-index: 5;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.result-card {
+  background: #e8e6e0;
+  border-radius: 14px;
+  padding: clamp(16px, 5vw, 22px) clamp(16px, 5vw, 24px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 62%;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+}
+
+.result-title {
+  font-family: 'Baloo 2', sans-serif;
+  font-size: clamp(16px, 5.5vw, 22px);
+  font-weight: 700;
+  color: #2e8b57;
+  margin-bottom: 4px;
+}
+
+.result-stat {
+  font-size: clamp(12px, 3.5vw, 15px);
+  color: #333;
+}
+
+.result-best {
+  font-size: clamp(11px, 3vw, 13px);
+  color: #b8860b;
+  font-weight: 700;
+}
+
+.result-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.result-buttons button {
+  border: none;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-family: 'Baloo 2', sans-serif;
+  font-weight: 700;
+  font-size: clamp(11px, 3vw, 13px);
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  background: #3a3a3a;
+  color: #eee;
+}
+
+.result-buttons button:active {
+  filter: brightness(0.85);
+}
+
+#result-next {
+  background: #4a7fd6;
+  color: #fff;
+}
+
+#result-retry {
+  background: #c9a227;
+  color: #222;
+}
+
+#result-select {
+  background: #666;
+  color: #eee;
 }
 
 .status-row {
@@ -113,12 +304,12 @@ html, body {
   flex-shrink: 0;
 }
 
-/* D-pad */
+/* D-pad — 터치하기 편하도록 큼직하게 */
 
 .dpad {
   display: grid;
-  grid-template-columns: repeat(3, clamp(40px, 12vw, 50px));
-  grid-template-rows: repeat(3, clamp(40px, 12vw, 50px));
+  grid-template-columns: repeat(3, clamp(52px, 17vw, 74px));
+  grid-template-rows: repeat(3, clamp(52px, 17vw, 74px));
   flex-shrink: 0;
 }
 
@@ -139,21 +330,21 @@ html, body {
   background: #c9c7c0;
 }
 
-.dpad-up    { grid-column: 2; grid-row: 1; border-radius: 12px 12px 0 0; }
-.dpad-left  { grid-column: 1; grid-row: 2; border-radius: 12px 0 0 12px; }
+.dpad-up    { grid-column: 2; grid-row: 1; border-radius: 14px 14px 0 0; }
+.dpad-left  { grid-column: 1; grid-row: 2; border-radius: 14px 0 0 14px; }
 .dpad-center{ grid-column: 2; grid-row: 2; background: #dcdad3; box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.25); }
-.dpad-right { grid-column: 3; grid-row: 2; border-radius: 0 12px 12px 0; }
-.dpad-down  { grid-column: 2; grid-row: 3; border-radius: 0 0 12px 12px; }
+.dpad-right { grid-column: 3; grid-row: 2; border-radius: 0 14px 14px 0; }
+.dpad-down  { grid-column: 2; grid-row: 3; border-radius: 0 0 14px 14px; }
 
 .tri {
   width: 0;
   height: 0;
 }
 
-.tri-up    { border-left: 9px solid transparent; border-right: 9px solid transparent; border-bottom: 12px solid #2a2a2a; }
-.tri-down  { border-left: 9px solid transparent; border-right: 9px solid transparent; border-top: 12px solid #2a2a2a; }
-.tri-left  { border-top: 9px solid transparent; border-bottom: 9px solid transparent; border-right: 12px solid #2a2a2a; }
-.tri-right { border-top: 9px solid transparent; border-bottom: 9px solid transparent; border-left: 12px solid #2a2a2a; }
+.tri-up    { border-left: 12px solid transparent; border-right: 12px solid transparent; border-bottom: 16px solid #2a2a2a; }
+.tri-down  { border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 16px solid #2a2a2a; }
+.tri-left  { border-top: 12px solid transparent; border-bottom: 12px solid transparent; border-right: 16px solid #2a2a2a; }
+.tri-right { border-top: 12px solid transparent; border-bottom: 12px solid transparent; border-left: 16px solid #2a2a2a; }
 
 /* Action buttons */
 
@@ -167,8 +358,8 @@ html, body {
 
 .action-grid {
   display: grid;
-  grid-template-columns: repeat(2, clamp(52px, 15vw, 70px));
-  grid-auto-rows: clamp(36px, 9vw, 48px);
+  grid-template-columns: repeat(2, clamp(56px, 16vw, 76px));
+  grid-auto-rows: clamp(40px, 10vw, 52px);
   gap: clamp(6px, 1.5vw, 8px);
 }
 
@@ -239,10 +430,11 @@ html, body {
 
 /* 가로 모드 + 짧은 세로 높이 (모바일 가로 방향): 세로 공간을 최대한 아낀다 */
 @media (orientation: landscape) and (max-height: 500px) {
-  .console { flex-direction: row; align-items: center; gap: 16px; }
+  .console { width: auto; max-width: 96vw; flex-direction: row; align-items: center; gap: 16px; }
   .console-title { writing-mode: vertical-rl; margin: 0; font-size: clamp(14px, 4vh, 18px); }
-  .screen-bezel { flex-shrink: 1; }
-  #game-canvas { max-height: 70vh; }
+  .view-game { flex-direction: row; align-items: center; gap: 14px; }
+  .hud-row { display: none; }
+  #game-canvas { max-height: min(78vh, calc(100vh - 60px)); }
   .status-row { display: none; }
   .controls-row {
     flex-direction: column;
@@ -250,8 +442,8 @@ html, body {
     gap: 12px;
     flex-wrap: nowrap;
   }
-  .dpad { grid-template-columns: repeat(3, clamp(34px, 9vh, 44px)); grid-template-rows: repeat(3, clamp(34px, 9vh, 44px)); }
-  .action-grid { grid-template-columns: repeat(2, clamp(44px, 11vh, 56px)); grid-auto-rows: clamp(30px, 7vh, 38px); }
+  .dpad { grid-template-columns: repeat(3, clamp(40px, 10vh, 52px)); grid-template-rows: repeat(3, clamp(40px, 10vh, 52px)); }
+  .action-grid { grid-template-columns: repeat(2, clamp(48px, 12vh, 60px)); grid-auto-rows: clamp(32px, 8vh, 40px); }
   .start-select,
   .speaker-grille { display: none; }
 }
