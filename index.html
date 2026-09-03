@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Sokoban</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -33,10 +33,13 @@
         <button class="dpad-btn dpad-down" data-dir="down"><span class="tri tri-down"></span></button>
       </div>
 
-      <button id="undo-btn" class="action-btn">Undo</button>
-
-      <div class="action-cluster">
-        <button id="reset-btn" class="action-btn reset-btn">Reset</button>
+      <div class="action-panel">
+        <div class="action-grid">
+          <button id="undo-btn" class="action-btn" title="Undo">Undo</button>
+          <button id="redo-btn" class="action-btn" title="Redo">Redo</button>
+          <button id="reset-btn" class="action-btn reset-btn" title="Reset level">Reset</button>
+          <button id="fullscreen-btn" class="action-btn fullscreen-btn" title="Fullscreen">⛶</button>
+        </div>
         <div class="start-select">START / SELECT</div>
       </div>
 

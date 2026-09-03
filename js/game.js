@@ -27,18 +27,27 @@ class Game {
     canvas.height = height * TILE_SIZE;
 
     this.history = [];
+    this.redoStack = [];
 
     this.render();
   }
 
-  // 레벨을 초기 상태로 되돌림 (플레이어/박스 위치, undo 히스토리 모두 리셋)
+  // 레벨을 초기 상태로 되돌림 (플레이어/박스 위치, undo/redo 히스토리 모두 리셋)
   reset() {
     const { grid, player, boxes } = parseMap(this.mapLines);
     this.grid = grid;
     this.player = player;
     this.boxes = boxes;
     this.history = [];
+    this.redoStack = [];
     this.render();
+  }
+
+  snapshot() {
+    return {
+      player: { ...this.player },
+      boxes: this.boxes.map(b => ({ ...b })),
+    };
   }
 
   isWall(x, y) {
@@ -64,10 +73,8 @@ class Game {
       if (this.isWall(bx, by) || this.getBoxAt(bx, by)) return false;
     }
 
-    this.history.push({
-      player: { ...this.player },
-      boxes: this.boxes.map(b => ({ ...b })),
-    });
+    this.history.push(this.snapshot());
+    this.redoStack = [];
 
     if (box) {
       box.x = nx + dx;
@@ -86,8 +93,22 @@ class Game {
     const prev = this.history.pop();
     if (!prev) return false;
 
+    this.redoStack.push(this.snapshot());
     this.player = prev.player;
     this.boxes = prev.boxes;
+
+    this.render();
+    return true;
+  }
+
+  // undo를 다시 실행. 다시 실행할 이동이 없으면 false 반환.
+  redo() {
+    const next = this.redoStack.pop();
+    if (!next) return false;
+
+    this.history.push(this.snapshot());
+    this.player = next.player;
+    this.boxes = next.boxes;
 
     this.render();
     return true;

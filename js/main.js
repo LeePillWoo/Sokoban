@@ -19,6 +19,12 @@ window.addEventListener('keydown', (e) => {
     return;
   }
 
+  if (e.key === 'y' || e.key === 'Y' || e.key === 'x' || e.key === 'X') {
+    e.preventDefault();
+    game.redo();
+    return;
+  }
+
   const dir = KEY_TO_DIR[e.key];
   if (!dir) return;
 
@@ -44,6 +50,23 @@ document.getElementById('undo-btn').addEventListener('click', () => {
   game.undo();
 });
 
+document.getElementById('redo-btn').addEventListener('click', () => {
+  game.redo();
+});
+
 document.getElementById('reset-btn').addEventListener('click', () => {
   game.reset();
 });
+
+const fullscreenBtn = document.getElementById('fullscreen-btn');
+if (!document.fullscreenEnabled) {
+  fullscreenBtn.style.display = 'none';
+} else {
+  fullscreenBtn.addEventListener('click', () => {
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      document.documentElement.requestFullscreen().catch(() => {});
+    }
+  });
+}
