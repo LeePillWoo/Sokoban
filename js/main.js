@@ -1,4 +1,6 @@
-const PROGRESS_KEY = 'sokoban:progress';
+// 스테이지 구성이 바뀌면(레벨 교체 등) 버전을 올려 예전 기록이 새 퍼즐에
+// 잘못 표시되지 않도록 한다.
+const PROGRESS_KEY = 'sokoban:progress:v2';
 
 function loadProgress() {
   try {
